@@ -6,7 +6,7 @@ from map_msgs.msg import OccupancyGridUpdate
 import rospy
 from rospkg import RosPack
 
-import cPickle
+import pickle
 
 if __name__ == '__main__':
     rospy.init_node('test_occ_grid')
@@ -28,12 +28,12 @@ if __name__ == '__main__':
     rospy.loginfo("Done")
     rp = RosPack()
     pkg_path = rp.get_path('occupancy_grid_python')
-    global_costmap_msg = cPickle.load(
-        open(pkg_path + '/data/global_costmap.pickle'))
-    local_costmap_msg = cPickle.load(
-        open(pkg_path + '/data/local_costmap.pickle'))
-    map_msg = cPickle.load(
-        open(pkg_path + '/data/map.pickle'))
+    global_costmap_msg = pickle.load(
+        open(pkg_path + '/data/global_costmap.pickle', 'rb'))
+    local_costmap_msg = pickle.load(
+        open(pkg_path + '/data/local_costmap.pickle', 'rb'))
+    map_msg = pickle.load(
+        open(pkg_path + '/data/map.pickle', 'rb'))
     global_costmap_pub.publish(global_costmap_msg)
     local_costmap_pub.publish(local_costmap_msg)
     map_pub.publish(map_msg)
@@ -103,8 +103,9 @@ if __name__ == '__main__':
     #     print accum
 
     rospy.loginfo("Getting closest x y")
-    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(
-        ogm.width / 2, ogm.height / 2, 2, 5)
+    print(int(ogm.height / 2), int(ogm.width / 2))
+    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(int(ogm.width / 2), int(ogm.height / 2), 2, 5)
+    #closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(int(ogm.height / 2), int(ogm.width / 2), 2, 5)
     rospy.loginfo("closest x y cost: " + str((closest_x, closest_y, cost)))
 
     ogm = OccupancyGridManager('/move_base/local_costmap/costmap',
@@ -167,8 +168,8 @@ if __name__ == '__main__':
     #     print accum
 
     rospy.loginfo("Getting closest x y")
-    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(
-        ogm.width / 2 + 20, ogm.height / 2 + 20, 255, 5)
+    print(ogm.width / 2 + 20, ogm.height / 2 )
+    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(int(ogm.width / 2 + 20), int(ogm.height / 2 + 20), 255, 5)
     rospy.loginfo("closest x y cost: " + str((closest_x, closest_y, cost)))
 
     ogm = OccupancyGridManager('/map',
@@ -245,8 +246,7 @@ if __name__ == '__main__':
     #     print accum
 
     rospy.loginfo("Getting closest x y")
-    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(
-        ogm.width / 2 + 20, ogm.height / 2 + 20, 100, 5)
+    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(int(ogm.width / 2 + 20), int(ogm.height / 2 + 20), 100, 5)
     rospy.loginfo("closest x y cost: " + str((closest_x, closest_y, cost)))
 
     rospy.loginfo("radius 1")
@@ -388,8 +388,7 @@ if __name__ == '__main__':
     #     print accum
 
     rospy.loginfo("Getting closest x y")
-    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(
-        ogm.width / 2 + 20, ogm.height / 2 + 20, 100, 5)
+    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(int(ogm.width / 2 + 20), int(ogm.height / 2 + 20), 100, 5)
     rospy.loginfo("closest x y cost: " + str((closest_x, closest_y, cost)))
 
     rospy.loginfo("radius 1")

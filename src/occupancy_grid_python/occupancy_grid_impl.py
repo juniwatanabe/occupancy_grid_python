@@ -42,6 +42,9 @@ class OccupancyGridManager(object):
                       ", starting from bottom left corner of the grid. " + 
                       " Reference_frame: " + str(self.reference_frame) +
                       " origin: " + str(self.origin))
+    
+    def __del__(self):
+        print("インスタンスは破棄されました")
 
     @property
     def resolution(self):
@@ -229,7 +232,7 @@ class OccupancyGridManager(object):
 
 if __name__ == '__main__':
     rospy.init_node('test_occ_grid')
-    ogm = OccupancyGridManager('/move_base_flex/global_costmap/costmap',
+    ogm = OccupancyGridManager('/okd1/move_base/global_costmap/costmap',
                                subscribe_to_updates=True)
     wx1, wy1 = ogm.get_world_x_y(0, 0)
     print("world from costmap coords  0 0: ")
@@ -255,7 +258,7 @@ if __name__ == '__main__':
     print("cost wx2, wy2: " + str(cost))
 
     # known place right now
-    cost = ogm.get_cost_from_world_x_y(0.307, -0.283)
+    cost = ogm.get_cost_from_world_x_y(-0.05, -1)
     print("cost of know nplace is: " + str(cost))
 
     # cost = ogm.get_cost_from_world_x_y(6.485, -1.462)
@@ -275,14 +278,30 @@ if __name__ == '__main__':
     except IndexError as e:
         print("We got, correctly, indexerror: " + str(e))
 
-    il = range(0, ogm.height)
+    il = list(range(0, ogm.height))
     # reverse the list as the origin coordinate is bottom left
     il.reverse()
     for i in il:
         accum = ''
-        l = range(0, ogm.width)
+        l = list(range(0, ogm.width))
         # l.reverse()
         for j in l:
-            accum += str(ogm.get_cost_from_costmap_x_y(i, j)) + ' '
+            #accum += str(ogm.get_cost_from_costmap_x_y(i, j)) + ' '
+            accum += str(ogm.get_cost_from_costmap_x_y(j, i)) + ' '
             # print(ogm.get_cost_from_costmap_x_y(i, 270))
-        print accum
+        #print (accum)
+
+    rospy.loginfo("Getting closest x y")
+    closest_x, closest_y, cost = ogm.get_closest_cell_under_cost(336, 304, 100, 10)
+    rospy.loginfo("closest x y cost: " + str((closest_x, closest_y, cost)))
+
+    rospy.loginfo("radius 40 (would be 2m at 0.05 resolution)")
+    rospy.loginfo("Getting closest x y over (look point: " + str((0, 0)))
+    closest_x, closest_y, cost = ogm.get_closest_cell_over_cost(336, 304, 99, 40)
+    rospy.loginfo("closest x y cost over: " + str((closest_x, closest_y, cost)))
+
+    cost = ogm.get_cost_from_costmap_x_y(closest_x, closest_y)
+    print("cost of know nplace is: " + str(cost))
+    wx2, wy2 = ogm.get_world_x_y(closest_x, closest_y)
+    print("back to world: ")
+    print((wx2, wy2))

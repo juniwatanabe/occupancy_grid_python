@@ -6,7 +6,7 @@ from map_msgs.msg import OccupancyGridUpdate
 import rospy
 from rospkg import RosPack
 
-import cPickle
+import pickle
 
 if __name__ == '__main__':
     rospy.init_node('test_occ_grid')
